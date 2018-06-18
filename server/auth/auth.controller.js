@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 const httpStatus = require('http-status');
 const APIError = require('../helpers/APIError');
 const config = require('../../config/config');
+const mongoose = require('mongoose');
+const User = mongoose.model("User");
 
 // sample user, used for authentication
 const user = {
@@ -28,6 +30,27 @@ function login(req, res, next) {
       username: user.username
     });
   }
+
+  User.findOne({
+    deleted: false
+  }).or([
+    {username: req.body.login},
+    {email: req.body.login}
+  ]).exec(function (err, user) {
+    if (err) return res.serverError(err);
+    if (!user) return res.notFound("User not found");
+    user.authenticateUser(req.body.password || "", function (err, isMatch) {
+      if (err) return res.serverError(err);
+      if (!isMatch) return res.forbidden();
+
+      res.ok({
+        user: user,
+        token: res.jwt({
+          id: user.id
+        }).token
+      });
+    });
+  });
 
   const err = new APIError('Authentication error', httpStatus.UNAUTHORIZED, true);
   return next(err);

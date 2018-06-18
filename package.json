@@ -15,7 +15,6 @@
     "start:debug": "cross-env DEBUG=express-mongoose-es6-rest-api:* yarn start",
     "lint": "esw *.js server config --color",
     "lint:watch": "yarn lint -- --watch",
-    "precommit": "yarn lint && yarn test",
     "test": "cross-env NODE_ENV=test ./node_modules/.bin/mocha --ui bdd --reporter spec --colors server --recursive",
     "test:watch": "yarn test -- --watch",
     "test:coverage": "cross-env NODE_ENV=test ./node_modules/.bin/istanbul cover _mocha -- --ui bdd --reporter spec --colors server --recursive",
@@ -40,11 +39,14 @@
     "boilerplate"
   ],
   "dependencies": {
+    "bcrypt": "2.0.1",
+    "bcrypt-nodejs": "^0.0.3",
     "bluebird": "3.5.1",
     "body-parser": "1.18.2",
     "compression": "1.7.2",
     "cookie-parser": "1.4.3",
     "cors": "2.8.4",
+    "crypto": "1.0.1",
     "debug": "^2.4.5",
     "dotenv": "^4.0.0",
     "express": "4.16.3",
@@ -57,7 +59,9 @@
     "jsonwebtoken": "7.1.9",
     "method-override": "^2.3.10",
     "mongoose": "4.7.4",
+    "mongoose-unique-validator": "2.0.1",
     "morgan": "1.9.0",
+    "validator": "10.3.0",
     "winston": "2.4.1"
   },
   "devDependencies": {

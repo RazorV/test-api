@@ -4,6 +4,8 @@ const expressJwt = require('express-jwt');
 const paramValidation = require('../../config/param-validation');
 const authCtrl = require('./auth.controller');
 const config = require('../../config/config');
+const isLoggedIn = require('../middlewares/isLoggedIn');
+const currentUser = require('../middlewares/currentUser');
 
 const router = express.Router(); // eslint-disable-line new-cap
 
@@ -14,6 +16,6 @@ router.route('/login')
 /** GET /api/auth/random-number - Protected route,
  * needs token returned by the above as header. Authorization: Bearer {token} */
 router.route('/random-number')
-  .get(expressJwt({ secret: config.jwtSecret }), authCtrl.getRandomNumber);
+  .get([isLoggedIn, currentUser], authCtrl.getRandomNumber);
 
 module.exports = router;

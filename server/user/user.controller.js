@@ -47,6 +47,7 @@ function update(req, res, next) {
   const user = req.user;
   user.username = req.body.username;
   user.mobileNumber = req.body.mobileNumber;
+  user.role = req.body.role;
 
   user.save()
     .then(savedUser => res.json(savedUser))
