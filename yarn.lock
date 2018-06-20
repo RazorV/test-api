@@ -291,7 +291,7 @@ bcrypt-pbkdf@^1.0.0:
   dependencies:
     tweetnacl "^0.14.3"
 
-bcrypt@false2.0.1:
+bcrypt@2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/bcrypt/-/bcrypt-2.0.1.tgz#229c5afe09379789f918efe86e5e5b682e509f85"
   dependencies:
@@ -679,7 +679,7 @@ cryptiles@2.x.x:
   dependencies:
     boom "2.x.x"
 
-crypto@false1.0.1:
+crypto@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/crypto/-/crypto-1.0.1.tgz#2af1b7cad8175d24c8a1b0778255794a21803037"
 

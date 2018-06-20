@@ -3,11 +3,10 @@ const mongoose = require('mongoose');
 const httpStatus = require('http-status');
 const APIError = require('../helpers/APIError');
 const Role = require('./role.model');
-const validator  = require('validator');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const jwt  = require('jsonwebtoken');
-const uniqueValidator = require('mongoose-unique-validator');
+const config = require('../../config/config');
 
 /**
  * User Schema
@@ -17,13 +16,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     unique: true,
     required: [true, 'Email is required!'],
-    trim: true,
-    validate: {
-      validator(email) {
-        return validator.isEmail(email);
-      },
-      message: '{VALUE} is not a valid email!',
-    },
+    trim: true
   },
   firstName: {
     type: String,
@@ -46,12 +39,6 @@ const UserSchema = new mongoose.Schema({
     required: [true, 'Password is required!'],
     trim: true,
     minlength: [6, 'Password need to be longer!'],
-    validate: {
-      validator(password) {
-        return passwordReg.test(password);
-      },
-      message: '{VALUE} is not a valid password!',
-    },
   },
   mobileNumber: {
     type: String,
@@ -72,10 +59,6 @@ const UserSchema = new mongoose.Schema({
   }
 });
 
-UserSchema.plugin(uniqueValidator, {
-  message: '{VALUE} already taken!',
-});
-
 /**
  * Add your
  * - pre-save hooks
@@ -87,36 +70,33 @@ UserSchema.plugin(uniqueValidator, {
  * Methods
  */
 UserSchema.method({
-  _hashPassword(password) {
-    return hashSync(password);
-  },
-  authenticateUser(password) {
-    return compareSync(password, this.password);
-  },
+  /**
+   * other simple options to hash and compare password.
+   */
+  // _hashPassword(password) {
+  //   return hashSync(password);
+  // },
+  // authenticateUser(password) {
+  //   return compareSync(password, this.password);
+  // },
+
   createToken() {
     return jwt.sign(
       {
         _id: this._id,
       },
-      constants.JWT_SECRET,
+      config.jwtSecret,
     );
   },
   // _hashPassword(password) {
   //   return hashSync(password);
   // },
-  authenticateUser(password) {
+  authenticateUser(password, next) {
     bcrypt.compare(password, this.password, function (err, isMatch) {
-      if (err) return false;
-      return isMatch;
+      console.log(isMatch);
+      if (err) return next(err, isMatch);
+      return next(err, isMatch);
     });
-  },
-  createToken() {
-    return jwt.sign(
-      {
-        _id: this._id,
-      },
-      constants.JWT_SECRET,
-    );
   },
 });
 
@@ -177,9 +157,8 @@ UserSchema.pre("save", function (next) {
     next();
 });
 
-UserSchema.post("save", function (next) {
+UserSchema.post("save", function () {
   console.log('post save hook');
-  // next();
 });
 //
 // UserSchema.pre("count", function (next) {

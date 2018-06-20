@@ -1,15 +1,8 @@
-const jwt = require('jsonwebtoken');
 const httpStatus = require('http-status');
 const APIError = require('../helpers/APIError');
 const config = require('../../config/config');
 const mongoose = require('mongoose');
 const User = mongoose.model("User");
-
-// sample user, used for authentication
-const user = {
-  username: 'react',
-  password: 'express'
-};
 
 /**
  * Returns jwt token if valid username and password is provided
@@ -19,41 +12,32 @@ const user = {
  * @returns {*}
  */
 function login(req, res, next) {
-  // Ideally you'll fetch this from the db
-  // Idea here was to show how jwt works with simplicity
-  if (req.body.username === user.username && req.body.password === user.password) {
-    const token = jwt.sign({
-      username: user.username
-    }, config.jwtSecret);
-    return res.json({
-      token,
-      username: user.username
-    });
-  }
-
   User.findOne({
     deleted: false
   }).or([
-    {username: req.body.login},
-    {email: req.body.login}
+    {userName: req.body.username},
+    {email: req.body.username}
   ]).exec(function (err, user) {
-    if (err) return res.serverError(err);
-    if (!user) return res.notFound("User not found");
+    // console.log(user, err);
+    if (err) return next(err);
+    if (!user) {
+      const err = new APIError('User not found', httpStatus.NOT_FOUND, true);
+      return next(err);
+    }
     user.authenticateUser(req.body.password || "", function (err, isMatch) {
-      if (err) return res.serverError(err);
-      if (!isMatch) return res.forbidden();
+      if (err) return next(err);
+      if (!isMatch) {
+        const err = new APIError('Authentication error', httpStatus.UNAUTHORIZED, true);
+        return next(err);
+      }
 
-      res.ok({
+      res.json({
         user: user,
-        token: res.jwt({
-          id: user.id
-        }).token
+        token: user.createToken()
       });
     });
   });
 
-  const err = new APIError('Authentication error', httpStatus.UNAUTHORIZED, true);
-  return next(err);
 }
 
 /**
