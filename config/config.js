@@ -32,6 +32,9 @@ if (error) {
 
 const config = {
   env: envVars.NODE_ENV,
+  tempUploadDir: './temp/uploads/',
+  uploadDir: './public/uploads/',
+  publicDir: '/uploads/',
   port: envVars.PORT,
   mongooseDebug: envVars.MONGOOSE_DEBUG,
   jwtSecret: envVars.JWT_SECRET,
