@@ -1,4 +1,7 @@
 const User = require('./user.model');
+const paramValidation = require('../../config/param-validation');
+const MailService = require ('../services/mail.service');
+const fs = require ('fs');
 
 /**
  * Load user and append to req.
@@ -74,5 +77,24 @@ function remove(req, res, next) {
     .then(deletedUser => res.json(deletedUser))
     .catch(e => next(e));
 }
+/**
+ * Send mail user.
+ */
+function email(req, res, next) {
+  console.log(req.params);
+  let ejs = require('ejs');
+  let fileName = '/../views/emailTest.ejs';
+  let fieldTemplate = fs.readFileSync(__dirname + fileName, 'utf-8');
+  let content = ejs.render(fieldTemplate, {
+    email: req.params.email || 'test@mail.com'
+  });
+  MailService.send(content, 'New message', req.params.email).then(function (resolve, reject) {
+    console.log(reject, resolve);
+    if (reject) {
+      return next(reject);
+    }
+    res.json(resolve);
+  });
+}
 
-module.exports = { load, get, create, update, list, remove };
+module.exports = { load, get, create, update, list, remove, email };

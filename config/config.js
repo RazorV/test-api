@@ -31,6 +31,18 @@ if (error) {
 }
 
 const config = {
+  smtp: {
+    host: envVars.SMTP_HOST,
+    auth: {
+      user: envVars.SMTP_USER,
+      pass: envVars.SMTP_PASSWORD
+    }
+  },
+  mailInfo:{
+    from: envVars.MAIL_FROM_NAME,
+    fromAddress: envVars.MAIL_FROM_EMAIL,
+    to: envVars.MAIL_TO
+  },
   env: envVars.NODE_ENV,
   tempUploadDir: './temp/uploads/',
   uploadDir: './public/uploads/',

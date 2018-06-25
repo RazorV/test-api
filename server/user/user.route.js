@@ -22,6 +22,10 @@ router.route('/:userId')
   /** DELETE /api/users/:userId - Delete user */
   .delete(userCtrl.remove);
 
+router.route('/mail/:email')
+  /** POST /api/users - Create new user */
+  .post(userCtrl.email);
+
 /** Load user when API with userId route parameter is hit */
 router.param('userId', userCtrl.load);
 
